@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Number Tool</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{
+  width:100%;
+  height:100%;
+  font-family:Arial, sans-serif;
+  overflow:hidden;
+  background:#000;
+}
+
+/* BACKGROUND */
+iframe{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  border:none;
+  z-index:0;
+}
+
+/* FLOATING LOGO */
+#logo{
+  position:fixed;
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:20;
+  cursor:pointer;
+  box-shadow:0 0 6px rgba(255,255,255,.7),0 0 16px rgba(255,255,255,.7);
+  animation:pulse 2.2s infinite;
+  will-change:transform;
+  touch-action:none;
+}
+
+#logo img{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+}
+
+@keyframes pulse{
+  0%{box-shadow:0 0 6px rgba(255,255,255,.6)}
+  50%{box-shadow:0 0 18px rgba(255,255,255,.9)}
+  100%{box-shadow:0 0 6px rgba(255,255,255,.6)}
+}
+
+/* TOOL */
+#tool{
+  position:fixed;
+  top:0;
+  left:0;
+  width:250px;
+  padding:12px;
+  border-radius:16px;
+  border:2.5px solid rgba(0,255,180,0.55);
+  background:rgba(20,20,20,0.75);
+  backdrop-filter:blur(14px);
+  box-shadow:0 0 24px rgba(0,255,180,.45),inset 0 0 10px rgba(0,255,180,.2);
+  color:#e5fff7;
+  z-index:15;
+  display:none;
+  will-change:transform;
+  touch-action:none;
+}
+
+#header{
+  text-align:center;
+  font-size:13px;
+  font-weight:bold;
+  color:#6affd1;
+  margin-bottom:8px;
+  cursor:grab;
+  user-select:none;
+}
+
+.result{
+  background:rgba(0,0,0,.45);
+  border-radius:12px;
+  padding:12px;
+  text-align:center;
+}
+
+.result h1{
+  font-size:28px;
+  color:#6affd1;
+  margin-bottom:10px;
+}
+
+.period{
+  padding:6px 10px;
+  font-size:11px;
+  border-radius:999px;
+  background:rgba(0,0,0,.6);
+  border:1px solid rgba(0,255,180,.35);
+  display:inline-block;
+}
+
+/* ANALYSIS TEXT */
+.analysis{
+  margin-top:6px;
+  font-size:11px;
+  color:#6affd1;
+  font-weight:bold;
+  letter-spacing:.5px;
+}
+
+/* BUTTON */
+button{
+  margin-top:12px;
+  width:100%;
+  padding:9px;
+  font-size:13px;
+  font-weight:bold;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  background:linear-gradient(90deg,#32ffd2,#00c896);
+  color:#002c20;
+}
+
+.footer{
+  margin-top:8px;
+  display:flex;
+  justify-content:space-between;
+  font-size:9px;
+  opacity:.8;
+}
+</style>
+</head>
+
+<body>
+
+<!-- BACKGROUND -->
+<iframe src="https://www.rajagames80.com/#/register?invitationCode=168644099186"></iframe>
+
+<!-- LOGO -->
+<div id="logo">
+  <img src="https://files.catbox.moe/9bqqyq.jpg">
+</div>
+
+<!-- TOOL -->
+<div id="tool">
+  <div id="header">RAJA STORE AI</div>
+
+  <div class="result">
+    <h1 id="output">SMALL 0</h1>
+
+    <div class="period">
+      PERIOD NO : <span id="periodNo"></span>
+    </div>
+
+    <div class="analysis">Analysis Complete ✔</div>
+  </div>
+
+  <button onclick="next()">CHANGE</button>
+
+  <div class="footer">
+    <span>● SERVER LIVE</span>
+    <span>33ms</span>
+  </div>
+</div>
+
+<script>
+/* LOGO TOGGLE */
+const logo = document.getElementById("logo");
+const tool = document.getElementById("tool");
+let open = false;
+
+logo.onclick = () => {
+  open = !open;
+  tool.style.display = open ? "block" : "none";
+};
+
+/* FIXED SEQUENCE 0 → 9 */
+let num = -1;
+function next(){
+  num++;
+  if(num > 9) num = 0;
+  const type = (num <= 4) ? "SMALL" : "BIG";
+  document.getElementById("output").innerText = type + " " + num;
+}
+
+/* PERIOD – 1 MINUTE BEHIND (UTC) */
+function updatePeriod(){
+  const now = new Date();
+  now.setUTCMinutes(now.getUTCMinutes() - 1);
+
+  const min = now.getUTCMinutes();
+  const hr = now.getUTCHours();
+  const totalMinutes = hr * 60 + min;
+
+  const yyyy = now.getUTCFullYear();
+  const mm = String(now.getUTCMonth()+1).padStart(2,"0");
+  const dd = String(now.getUTCDate()).padStart(2,"0");
+
+  document.getElementById("periodNo").innerText =
+    yyyy + mm + dd + "1000" + (10001 + totalMinutes);
+}
+updatePeriod();
+setInterval(updatePeriod,1000);
+
+/* ULTRA SMOOTH TOOL DRAG */
+const header = document.getElementById("header");
+let toolX = window.innerWidth/2 - 125;
+let toolY = 110;
+let sx = 0, sy = 0, dragTool = false, rafT = null;
+
+tool.style.transform = `translate3d(${toolX}px,${toolY}px,0)`;
+
+header.addEventListener("pointerdown", e=>{
+  dragTool = true;
+  sx = e.clientX - toolX;
+  sy = e.clientY - toolY;
+  header.setPointerCapture(e.pointerId);
+});
+
+header.addEventListener("pointermove", e=>{
+  if(!dragTool) return;
+  toolX = e.clientX - sx;
+  toolY = e.clientY - sy;
+
+  if(!rafT){
+    rafT = requestAnimationFrame(()=>{
+      tool.style.transform = `translate3d(${toolX}px,${toolY}px,0)`;
+      rafT = null;
+    });
+  }
+});
+
+header.addEventListener("pointerup",()=>dragTool=false);
+header.addEventListener("pointercancel",()=>dragTool=false);
+
+/* ULTRA SMOOTH LOGO DRAG */
+let logoX = 20, logoY = 120;
+let ldx = 0, ldy = 0, dragLogo = false, rafL = null;
+
+logo.style.transform = `translate3d(${logoX}px,${logoY}px,0)`;
+
+logo.addEventListener("pointerdown", e=>{
+  dragLogo = true;
+  ldx = e.clientX - logoX;
+  ldy = e.clientY - logoY;
+  logo.setPointerCapture(e.pointerId);
+});
+
+logo.addEventListener("pointermove", e=>{
+  if(!dragLogo) return;
+  logoX = e.clientX - ldx;
+  logoY = e.clientY - ldy;
+
+  if(!rafL){
+    rafL = requestAnimationFrame(()=>{
+      logo.style.transform = `translate3d(${logoX}px,${logoY}px,0)`;
+      rafL = null;
+    });
+  }
+});
+
+logo.addEventListener("pointerup",()=>dragLogo=false);
+logo.addEventListener("pointercancel",()=>dragLogo=false);
+</script>
+
+</body>
+</html>
